@@ -61,15 +61,43 @@
   const feedbackEl = document.getElementById("feedback");
 
   /* ---------- Sound ---------- */
-  // A fresh Audio() per play call lets short SFX overlap (e.g. correct-combo + streak3)
-  // and lets a cue replay cleanly even if the previous instance hasn't finished.
+  // One reusable Audio element per sound, created up front. Mobile browsers only allow
+  // an element to play without a direct user gesture AFTER it has successfully played
+  // during a real gesture at least once — so a fresh `new Audio()` per round (round 2+
+  // starts from a setTimeout, not a click) gets silently blocked. Pooling + unlocking
+  // once fixes that; the trade-off is a sound restarts instead of overlapping itself,
+  // which doesn't matter here since nothing needs to overlap itself.
+  const audioPool = {};
+  Object.keys(SOUND_SRC).forEach((name) => {
+    const a = new Audio(SOUND_SRC[name]);
+    a.preload = "auto";
+    audioPool[name] = a;
+  });
+  let audioUnlocked = false;
+
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    audioUnlocked = true;
+    Object.values(audioPool).forEach((a) => {
+      const p = a.play();
+      if (p && typeof p.then === "function") {
+        p.then(() => {
+          a.pause();
+          a.currentTime = 0;
+        }).catch(() => {
+          /* Unlock attempt failed silently — playSound() will still try later. */
+        });
+      }
+    });
+  }
+
   function playSound(name) {
-    const src = SOUND_SRC[name];
-    if (!src) return;
+    const a = audioPool[name];
+    if (!a) return;
     try {
-      const a = new Audio(src);
+      a.currentTime = 0;
       a.play().catch(() => {
-        /* Autoplay can be blocked before any user gesture; safe to ignore. */
+        /* Blocked by autoplay policy — safe to ignore, gameplay continues. */
       });
     } catch (e) {
       /* no-op — never let sound errors break gameplay */
@@ -156,7 +184,6 @@
       feedbackEl.textContent = "NICE!";
       feedbackEl.className = "feedback success";
 
-      playSound("correct");
       if (score % 3 === 0) {
         playSound("streak3");
       }
@@ -301,12 +328,14 @@
 
   /* ---------- Buttons ---------- */
   btnPlay.addEventListener("click", () => {
+    unlockAudio();
     resetGameState();
     showView(viewGame);
     startRound();
   });
 
   btnAgain.addEventListener("click", () => {
+    unlockAudio();
     resetGameState();
     showView(viewGame);
     startRound();
