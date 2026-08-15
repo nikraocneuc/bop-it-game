@@ -38,7 +38,6 @@
     pop: "Pop_it.mp3",
     squeeze: "squeeze_.mp3",
     pull: "pull_down.mp3",
-    correct: "correct-combo.mp3",
     wrong: "wrong-combo.mp3",
     streak3: "3-done-combos.mp3",
   };
