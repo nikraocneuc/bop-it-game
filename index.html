@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bop It — Playable Prototype</title>
+<link rel="stylesheet" href="bopit-game.css">
+</head>
+<body>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- MENU -->
+  <section id="view-menu" class="view">
+    <div class="menu-stack">
+      <h1 class="logo">BOP IT</h1>
+      <p class="menu-sub">Pop it. Squeeze it. Pull it.</p>
+      <button id="btn-play" class="btn btn--wide" type="button">PLAY</button>
+    </div>
+  </section>
+
+  <!-- GAMEPLAY -->
+  <section id="view-game" class="view hidden">
+    <div class="game-top">
+      <div class="counter-label">SCORE</div>
+      <div id="score" class="counter">0</div>
+      <div id="timer-ring" class="timer-ring"></div>
+    </div>
+
+    <div id="prompt-box" class="prompt-box">GET READY</div>
+
+    <div id="game-mid" class="game-mid" touch-action="none">
+      <div id="circle" class="circle">
+        <span id="circle-label">WAIT</span>
+      </div>
+      <div class="thumb thumb--left" aria-hidden="true">L</div>
+      <div class="thumb thumb--right" aria-hidden="true">R</div>
+    </div>
+
+    <div id="feedback" class="feedback" aria-live="polite"></div>
+  </section>
+
+  <!-- GAME OVER -->
+  <section id="view-gameover" class="view hidden">
+    <div class="center-col">
+      <div class="title-box title-box--plain">GAME OVER</div>
+      <div id="final-score" class="score-big">0</div>
+      <div class="counter-label">FINAL SCORE</div>
+      <button id="btn-again" class="btn btn--wide" type="button">PLAY AGAIN</button>
+      <button id="btn-menu" class="box box--secondary" type="button">BACK TO MENU</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="bopit-game.js"></script>
+</body>
+</html>
